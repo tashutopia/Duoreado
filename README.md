@@ -1,1 +1,1 @@
-# Text-Translator
+# Duoreado
