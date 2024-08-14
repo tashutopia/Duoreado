@@ -2,6 +2,18 @@
 
 import OpenAI from "openai";
 
+const sample_text = "Это пример предложения.";
+
+const sample_json = {
+  Это: "this",
+  пример: "example",
+  предложения: "sentence",
+};
+
+console.log(
+  `PROMPT: Here's an example: ${sample_text} -> ${JSON.stringify(sample_json)}`
+);
+
 export default async function translateText(text) {
   const openai = new OpenAI({
     apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
@@ -15,11 +27,14 @@ export default async function translateText(text) {
           content: [
             {
               type: "text",
-              text: `Translate the following sentence into Russian and return a 2D array. The first array should contain the Russian translations for each word, and the second array should contain the original English words corresponding to the same index. Sentence: "${text}"`,
+              // text: `Translate the following sentence into Russian and return a 2D array. The first array should contain the Russian translations for each word, and the second array should contain the original English words corresponding to the same index. Sentence: "${text}"`,
+              text: `Given the following sentence: "${text}" translate every word to English and return a json object, nothing more, nothing less.`,
             },
             {
               type: "text",
-              text: `Here's an example: "This is a sentence." -> [["Это", "есть", "предложение."], ["This", "is", "a", "sentence."]]`,
+              text: `Here's an example: ${sample_text} -> ${JSON.stringify(
+                sample_json
+              )}`,
             },
           ],
         },
@@ -30,8 +45,10 @@ export default async function translateText(text) {
       frequency_penalty: 0,
       presence_penalty: 0,
     });
-    console.log("response.choices", response.choices);
-    return response.choices[0].message.content;
+
+    const translations_json = JSON.parse(response.choices[0].message.content);
+    console.log("translations_json", translations_json);
+    return translations_json;
   } catch (error) {
     console.error(error);
   }

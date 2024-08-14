@@ -3,19 +3,15 @@
 import React, { useState, useEffect } from "react";
 import translateText from "@/api_calls/openai_translations";
 
-const sentence = "This is a sentence.";
+const sentence = "Это короткое предложение.";
 
 export default function Home() {
   const [hoveredWord, setHoveredWord] = useState<string | null>(null);
-  const [translations, setTranslations] = useState<string[]>([]);
+  const [translations, setTranslations] = useState<Record<string, string>>({});
 
   useEffect(() => {
     async function fetchTranslations() {
-      await translateText(sentence).then((result) => {
-        setTranslations(
-          (result ?? "").replace("[", "").replace("]", "").split(",")
-        );
-      });
+      setTranslations(await translateText(sentence));
     }
     fetchTranslations();
   }, []);
@@ -33,7 +29,7 @@ export default function Home() {
             {word}{" "}
             {hoveredWord === word && (
               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 p-2 bg-gray-200 border border-gray-400 rounded">
-                {translations[index]}
+                {translations[word]}
               </div>
             )}
           </span>
